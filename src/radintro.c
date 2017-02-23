@@ -2,7 +2,10 @@
 
 #include "resources.h"
 
+#define RADMARS_VOICE_ID 64
+
 Sprite* glassesSprite;
+u32 frameCounter = 0;
 
 void setupBackground() {
 	VDP_drawImage(PLAN_B, &bg, 0, 0);
@@ -20,14 +23,24 @@ void setupSprites() {
 int main() {
 	SPR_init(0, 0, 0);
 	// set all palette to black
-    VDP_setPaletteColors(0, (u16*)palette_black, 64);
-	
+	VDP_setPaletteColors(0, (u16*)palette_black, 64);
+
 	setupBackground();
 	setupSprites();
-	
+
+	XGM_startPlay(xgmmusic);
+	XGM_setPCM(RADMARS_VOICE_ID, voice, 42752);
+	XGM_setLoopNumber(0);
+
 	while (1) {
 		SPR_update();
+
+		if (frameCounter == 128) {
+			XGM_startPlayPCM(RADMARS_VOICE_ID, 0, 1);
+		}
+
 		VDP_waitVSync();
+		frameCounter++;
 	}
 	
 	return 0;
